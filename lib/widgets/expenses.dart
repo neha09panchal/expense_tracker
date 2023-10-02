@@ -30,12 +30,15 @@ class _ExpensesState extends State<Expenses> {
 
   void _openAddExpenseOverlay() {
     showModalBottomSheet(
-      context: context,
-      builder: (ctx) => NewExpense(
-        onAddExpense: _addExpense,
-      ),
-      isScrollControlled: true,
-    );
+        useSafeArea: true,
+        context: context,
+        builder: (ctx) => NewExpense(
+              onAddExpense: _addExpense,
+            ),
+        isScrollControlled: true,
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width,
+        ));
   }
 
   void _addExpense(Expense expense) {
@@ -68,6 +71,8 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     Widget mainContent = const Center(
       child: Text('No Expenses found.Start adding some!'),
     );
@@ -80,23 +85,33 @@ class _ExpensesState extends State<Expenses> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Expense Tracker'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _openAddExpenseOverlay,
-          )
-        ],
-      ),
-      body: Column(
-        children: [
-          Chart(expenses: _registerExpenses),
-          Expanded(
-            child: mainContent,
-          ),
-        ],
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Flutter Expense Tracker'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: _openAddExpenseOverlay,
+            )
+          ],
+        ),
+        body: width < 600
+            ? Column(
+                children: [
+                  Chart(expenses: _registerExpenses),
+                  Expanded(
+                    child: mainContent,
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    child: Chart(expenses: _registerExpenses),
+                  ),
+                  Expanded(
+                    child: mainContent,
+                  ),
+                ],
+              ));
   }
 }
